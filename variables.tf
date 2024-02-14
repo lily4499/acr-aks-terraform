@@ -9,3 +9,9 @@ variable "resource_group_name" {
   default     = "lili-rg"                            #your resource group name
   description = "Prefix of the resource group name that's combined with a random ID so name is unique in your Azure subscription"
 }
+
+variable "subscription_id" {}
+variable "tenant_id" {}
+variable "client_id" {}
+variable "client_secret" {}
+
