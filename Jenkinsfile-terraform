@@ -49,7 +49,7 @@ pipeline {
             steps {
                 script {
                     if (params.TERRAFORM_ACTION == 'apply') {
-                        sh 'terraform apply -auto-approve -var="client_secret=mpY8Q~22DXTl~XF1Q6lC_QeF33PshfljmXGrlayZ"'
+                        sh 'terraform apply -auto-approve'
                     } else if (params.TERRAFORM_ACTION == 'destroy') {
                         sh 'terraform destroy -auto-approve'
                     } else {
