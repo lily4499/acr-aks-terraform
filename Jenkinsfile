@@ -12,17 +12,17 @@ pipeline {
         stage('Install Resource Backend for Azure') {
             steps {
                 script {
-                    // Login to Azure using service principal credentials
-                    withCredentials([azureServicePrincipal(credentialsId: "${AZURE_CREDENTIALS_ID}", tenantId: '', clientId: '', clientSecret: '')]) {
-                        // Create resource group
-                        sh "az group create --name ${RESOURCE_GROUP_NAME} --location eastus"
-                        
-                        // Create storage account
-                        sh "az storage account create --resource-group ${RESOURCE_GROUP_NAME} --name ${STORAGE_ACCOUNT_NAME} --sku Standard_LRS --encryption-services blob"
-                        
-                        // Create blob container
-                        sh "az storage container create --name ${CONTAINER_NAME} --account-name ${STORAGE_ACCOUNT_NAME}"
-                    }
+                    // Get connection string for the storage account
+                    def connectionString = sh(script: "az storage account show-connection-string --name ${STORAGE_ACCOUNT_NAME} --query connectionString -o tsv", returnStdout: true).trim()
+                    
+                    // Create resource group
+                    sh "az group create --name ${RESOURCE_GROUP_NAME} --location eastus"
+                    
+                    // Create storage account
+                    sh "az storage account create --resource-group ${RESOURCE_GROUP_NAME} --name ${STORAGE_ACCOUNT_NAME} --sku Standard_LRS --encryption-services blob"
+                    
+                    // Create blob container
+                    sh "az storage container create --name ${CONTAINER_NAME} --connection-string ${connectionString}"
                 }
             }
         }
@@ -42,3 +42,4 @@ pipeline {
         }
     }
 }
+
