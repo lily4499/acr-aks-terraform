@@ -4,8 +4,13 @@ terraform {
     storage_account_name  = "lilibackendsa"  # Specify the name of the Azure Storage Account
     container_name        = "tfstatect"               # Specify the container within the Storage Account
     key                   = "terraform.tfstate"      # Specify the filename for the Terraform state file
- //   subscription_id = var.subscription_id
- //   tenant_id       = var.tenant_id
-  //  client_id       = var.client_id
   }
+}
+
+provider "azurerm" {
+  features {}
+  subscription_id = "YOUR_SUBSCRIPTION_ID"
+  client_id       = "YOUR_CLIENT_ID"
+  client_secret   = "YOUR_CLIENT_SECRET"
+  tenant_id       = "YOUR_TENANT_ID"
 }
