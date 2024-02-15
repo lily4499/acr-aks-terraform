@@ -8,43 +8,40 @@ pipeline {
     }
     
     stages {
-        stage('Get Connection String') {
+        stage('Create Storage Account') {
             steps {
                 script {
-                    // Get connection string for the storage account if it exists
-                    def connectionString = sh(script: "az storage account show-connection-string --name ${STORAGE_ACCOUNT_NAME} --query connectionString -o tsv", returnStdout: true, returnStatus: true).trim()
-
-                    // Check if the storage account exists
-                    if (connectionString) {
-                        // If the storage account exists, use the obtained connection string
-                        // Set the connection string as an environment variable
-                        env.STORAGE_CONNECTION_STRING = connectionString
+                    // Create resource group if not exists
+                    sh "az group create --name ${RESOURCE_GROUP_NAME} --location eastus --output none"
+                    
+                    // Check if the storage account already exists
+                    def storageAccountExists = sh(script: "az storage account check-name --name ${STORAGE_ACCOUNT_NAME} --output json", returnStdout: true).trim()
+                    
+                    // Create storage account if it doesn't exist
+                    if (storageAccountExists.contains('"nameAvailable": true')) {
+                        sh "az storage account create --resource-group ${RESOURCE_GROUP_NAME} --name ${STORAGE_ACCOUNT_NAME} --sku Standard_LRS --encryption-services blob"
                     } else {
-                        // If the storage account does not exist, set STORAGE_CONNECTION_STRING to an empty string
-                        env.STORAGE_CONNECTION_STRING = ''
+                        echo "Storage account ${STORAGE_ACCOUNT_NAME} already exists."
                     }
                 }
             }
         }
         
-        stage('Install Resource Backend for Azure') {
+        stage('Get Connection String') {
             steps {
                 script {
-                    // Create resource group
-                    sh "az group create --name ${RESOURCE_GROUP_NAME} --location eastus"
-                    
-                    // Create storage account only if the connection string is not already available
-                    if (!env.STORAGE_CONNECTION_STRING) {
-                        // Create storage account
-                        sh "az storage account create --resource-group ${RESOURCE_GROUP_NAME} --name ${STORAGE_ACCOUNT_NAME} --sku Standard_LRS --encryption-services blob"
-                    }
-                    
-                    // Get the connection string again after creating the storage account
+                    // Get connection string for the storage account
                     def connectionString = sh(script: "az storage account show-connection-string --name ${STORAGE_ACCOUNT_NAME} --query connectionString -o tsv", returnStdout: true).trim()
                     
                     // Set the connection string as an environment variable
                     env.STORAGE_CONNECTION_STRING = connectionString
-                    
+                }
+            }
+        }
+        
+        stage('Create Blob Container') {
+            steps {
+                script {
                     // Create blob container
                     sh "az storage container create --name ${CONTAINER_NAME} --connection-string ${env.STORAGE_CONNECTION_STRING}"
                 }
@@ -66,3 +63,4 @@ pipeline {
         }
     }
 }
+
