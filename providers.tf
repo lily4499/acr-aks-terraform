@@ -7,6 +7,14 @@ terraform {
     }
 }
 }
+
+backend "azurerm" {
+  resource_group_name   = "tfstate"  # Specify the Azure resource group for backend storage
+  storage_account_name  = "lilibackend"  # Specify the name of the Azure Storage Account
+  container_name        = "tfstate"               # Specify the container within the Storage Account
+  key                   = "terraform.tfstate"      # Specify the filename for the Terraform state file
+}
+
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
   features {}
