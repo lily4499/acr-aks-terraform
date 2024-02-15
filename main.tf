@@ -61,23 +61,3 @@ resource "azurerm_role_assignment" "arm_role" {
   skip_service_principal_aad_check = true
 }
 
-resource "null_resource" "create_storage" {
-  provisioner "local-exec" {
-    command = <<-EOT
-      #!/bin/bash
-
-      RESOURCE_GROUP_NAME=tfstaterg
-      STORAGE_ACCOUNT_NAME=lilibackendsa
-      CONTAINER_NAME=tfstatect
-
-      # Create resource group
-      az group create --name $RESOURCE_GROUP_NAME --location eastus
-
-      # Create storage account
-      az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
-
-      # Create blob container
-      az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
-    EOT
-  }
-}
