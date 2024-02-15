@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'TERRAFORM_ACTION', choices: ['apply', 'destroy'], description: 'Select Terraform action to perform')
+    }
+    
+    
+    environment {
+        SUBSCRIPTION_ID = credentials('lil-sp-subscription-id')
+        TENANT_ID       = credentials('lil-sp-tenant-id')
+        CLIENT_ID       = credentials('lil-sp-client-id')
+        CLIENT_SECRET   = credentials('lil-sp-client-secret-id')
+    }
+
+    stages {
+        stage('Azure Login') {
+            steps {
+                // Use withCredentials to securely retrieve Azure service principal credentials
+                withCredentials([azureServicePrincipal(credentialsId: 'lili-acr-credentials-id', tenantIdVariable: 'ARM_TENANT_ID', clientIdVariable: 'ARM_CLIENT_ID', clientSecretVariable: 'ARM_CLIENT_SECRET')]) {
+                    script {
+                        // Set environment variables for Terraform using retrieved credentials
+                        withEnv(["TF_VAR_subscription_id=${SUBSCRIPTION_ID}",
+                                 "TF_VAR_tenant_id=${TENANT_ID}",
+                                 "TF_VAR_client_id=${CLIENT_ID}",
+                                 "TF_VAR_client_secret=${CLIENT_SECRET}"]) {
+                            
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/lily4499/acr-aks-terraform.git'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                script {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Action') {
+            steps {
+                script {
+                    if (params.TERRAFORM_ACTION == 'apply') {
+                        sh 'terraform apply -auto-approve -var="client_secret=mpY8Q~22DXTl~XF1Q6lC_QeF33PshfljmXGrlayZ"'
+                    } else if (params.TERRAFORM_ACTION == 'destroy') {
+                        sh 'terraform destroy -auto-approve'
+                    } else {
+                        error 'Invalid Terraform action specified!'
+                    }
+                }
+            }
+        }
+        
+    }
+}
