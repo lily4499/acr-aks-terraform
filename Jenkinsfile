@@ -8,11 +8,30 @@ pipeline {
     }
     
     stages {
+        stage('Create Resource Group and Storage Account') {
+            steps {
+                script {
+                    // Create resource group if not exists
+                    sh "az group create --name ${RESOURCE_GROUP_NAME} --location eastus --output none"
+                    
+                    // Check if the storage account already exists
+                    def storageAccountExists = sh(script: "az storage account check-name --name ${STORAGE_ACCOUNT_NAME} --output json", returnStdout: true).trim()
+                    
+                    // Create storage account if it doesn't exist
+                    if (storageAccountExists.contains('"nameAvailable": true')) {
+                        sh "az storage account create --resource-group ${RESOURCE_GROUP_NAME} --name ${STORAGE_ACCOUNT_NAME} --sku Standard_LRS --encryption-services blob"
+                    } else {
+                        echo "Storage account ${STORAGE_ACCOUNT_NAME} already exists."
+                    }
+                }
+            }
+        }
+        
         stage('Get Connection String') {
             steps {
                 script {
                     // Get connection string for the storage account
-                    def connectionString = sh(script: "az storage account show-connection-string --name ${STORAGE_ACCOUNT_NAME} --query connectionString -o tsv", returnStdout: true).trim()
+                    def connectionString = sh(script: "az storage account show-connection-string --name ${STORAGE_ACCOUNT_NAME} --resource-group ${RESOURCE_GROUP_NAME} --query connectionString -o tsv", returnStdout: true).trim()
                     
                     // Set the connection string as an environment variable
                     env.STORAGE_CONNECTION_STRING = connectionString
@@ -44,4 +63,3 @@ pipeline {
         }
     }
 }
-
