@@ -51,7 +51,8 @@ pipeline {
         stage('Trigger Jenkins Job to Create ACR and AKS') {
             when {
                 expression {
-                    currentBuild.result == 'SUCCESS'
+                    // Run this stage if the previous stage (or any previous stage) has succeeded
+                    currentBuild.previousBuild?.result == 'SUCCESS'     
                 }
             }
             steps {
