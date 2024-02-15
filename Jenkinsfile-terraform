@@ -59,19 +59,13 @@ pipeline {
             }
         }
         stage('Trigger Jenkins Job to Push Docker Image to ACR') {
-            when {
-                expression {
-                    // Run this stage if the previous stage (or any previous stage) has succeeded
-                    currentBuild.previousBuild?.result == 'SUCCESS'     
-                }
-            }
             steps {
                 script {
                     // Trigger another Jenkins job to create ACR and AKS
                     build job: 'push-image-acr', wait: false
-                }
-            }
         }
+    }
+}
         
     }
 }
