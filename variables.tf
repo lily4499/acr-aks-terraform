@@ -13,5 +13,5 @@ variable "resource_group_name" {
 variable "subscription_id" {}
 variable "tenant_id" {}
 variable "client_id" {}
-variable "client_secret_id" {}
+variable "client_secret" {}
 
