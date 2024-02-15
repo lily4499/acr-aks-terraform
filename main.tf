@@ -53,17 +53,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
-# Add authentication command for AKS
-resource "null_resource" "authenticate_aks" {
-  provisioner "local-exec" {
-    command = <<EOT
-      az aks get-credentials --resource-group ${azurerm_resource_group.arg.name} --name ${azurerm_kubernetes_cluster.aks.name} --overwrite-existing
-    EOT
-
-    interpreter = ["bash", "-c"]
-  }
-}
-
 # Create acr pull access for AKS Cluster
 resource "azurerm_role_assignment" "arm_role" {
   principal_id                     = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
