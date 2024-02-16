@@ -5,6 +5,9 @@ pipeline {
         RESOURCE_GROUP_NAME = 'tfstaterg'
         STORAGE_ACCOUNT_NAME = 'lilibackendsa'
         CONTAINER_NAME = 'tfstatect'
+        AZURE_CREDENTIALS_ID = 'lili-acr-credentials-id' // ID of the Azure credentials configured in Jenkins
+    }
+    
     }
     
     stages {
