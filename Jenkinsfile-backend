@@ -7,9 +7,7 @@ pipeline {
         CONTAINER_NAME = 'tfstatect'
         AZURE_CREDENTIALS_ID = 'lili-acr-credentials-id' // ID of the Azure credentials configured in Jenkins
     }
-    
-    }
-    
+
     stages {
         stage('Create Resource Group and Storage Account') {
             steps {
