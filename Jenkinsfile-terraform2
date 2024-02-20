@@ -16,11 +16,15 @@ pipeline {
             steps {
                 script {
                     // Set Azure credentials using environment variables
-                    withEnv(["ARM_CLIENT_ID=${AZURE_USERNAME}",
-                             "ARM_CLIENT_SECRET=${AZURE_PASSWORD}"]) {
+                 //   withEnv(["ARM_CLIENT_ID=${AZURE_USERNAME}",
+                 //            "ARM_CLIENT_SECRET=${AZURE_PASSWORD}"]) {
                         // Log in to Azure
-                        sh 'az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant 98932122-35ff-47e5-a539-0942b55eb83c'
+                //        sh 'az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant 98932122-35ff-47e5-a539-0942b55eb83c'
+        
+                    withCredentials([usernamePassword(credentialsId: 'lilip-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
+                        sh 'az login --service-principal -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD" --tenant 98932122-35ff-47e5-a539-0942b55eb83c'
                     }
+
                 }
             }
         }
