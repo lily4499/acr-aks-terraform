@@ -17,7 +17,7 @@ pipeline {
                 script {
                     // Set Azure credentials using environment variables
                     withCredentials([usernamePassword(credentialsId: 'lilip-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
-                        sh 'az login --service-principal -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD --tenant 98932122-35ff-47e5-a539-0942b55eb83c'
+                        sh 'az login --https://portal.azure.com/ -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD --tenant 98932122-35ff-47e5-a539-0942b55eb83c'
                     }
                 }
             }
