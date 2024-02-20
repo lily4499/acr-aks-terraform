@@ -5,27 +5,11 @@ pipeline {
         choice(name: 'TERRAFORM_ACTION', choices: ['apply', 'destroy'], description: 'Select Terraform action to perform')
     }
     
-    environment {
-        SUBSCRIPTION_ID = credentials('lil-sp-subscription-id')
-        TENANT_ID       = credentials('lil-sp-tenant-id')
-        CLIENT_ID       = credentials('lil-sp-client-id')
-        CLIENT_SECRET   = credentials('lil-sp-client-secret-id')
-    }
-
     stages {
         stage('Azure Login') {
             steps {
-                script {
-                    // Set environment variables for Terraform using service principal credentials
-                    withEnv(["TF_VAR_subscription_id=${SUBSCRIPTION_ID}",
-                             "TF_VAR_tenant_id=${TENANT_ID}",
-                             "TF_VAR_client_id=${CLIENT_ID}",
-                             "TF_VAR_client_secret=${CLIENT_SECRET}"]) {
-                        // Log in to Azure using service principal credentials
-                   //     sh 'az login --service-principal -u $TF_VAR_client_id -p $TF_VAR_client_secret --tenant $TF_VAR_tenant_id'
-                        az login --service-principal -u CLIENT_ID -p CLIENT_SECRET --tenant TENANT_ID
-                    }
-                }
+                // Authenticate using Azure CLI with user credentials
+                sh 'az login'
             }
         }
         
@@ -38,7 +22,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                    sh 'terraform init -input=false'
+                    sh 'terraform init'
                 }
             }
         }
