@@ -7,8 +7,8 @@ pipeline {
     
     environment {
         // Set Azure credentials
-        AZURE_USERNAME = credentials('lil-sp-client-id')
-        AZURE_PASSWORD = credentials('lil-sp-client-secret-id')
+     //   AZURE_USERNAME = credentials('lil-sp-client-id')
+   //     AZURE_PASSWORD = credentials('lil-sp-client-secret-id')
     }
 
     stages {
@@ -21,7 +21,7 @@ pipeline {
                         // Log in to Azure
                 //        sh 'az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant 98932122-35ff-47e5-a539-0942b55eb83c'
         
-                    withCredentials([usernamePassword(credentialsId: 'lilip-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
+                     withCredentials([usernamePassword(credentialsId: 'lilip-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
                         sh 'az login --service-principal -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD" --tenant 98932122-35ff-47e5-a539-0942b55eb83c'
                     }
 
