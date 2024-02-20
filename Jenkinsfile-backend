@@ -59,7 +59,7 @@ pipeline {
             steps {
                 script {
                     // Trigger another Jenkins job to create ACR and AKS
-                    build job: 'Create-ACR-and-AKS-Resource', wait: false
+                    build job: 'Create-ACR-and-AKS-Resource-terraform', wait: false
                 }
             }
         }
