@@ -42,6 +42,9 @@ pipeline {
         }
         
         stage('Trigger Jenkins Job to Push Docker Image to ACR') {
+            when {
+                expression { params.TERRAFORM_ACTION == 'apply' }
+            }
             steps {
                 script {
                     // Trigger another Jenkins job to create ACR and AKS
